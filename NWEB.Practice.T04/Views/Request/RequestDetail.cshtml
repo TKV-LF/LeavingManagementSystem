@@ -1,0 +1,143 @@
+﻿@model Model.Request.RequestModel
+@{
+    ViewData["Title"] = "Request Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div id="content">
+    <!-- Begin Page Content -->
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 class="h1 mb-2 text-gray-800 text-center"><strong>Details Request</strong></h1>
+
+        <div class="form-group"></div>
+        <form id="CreateCategory" action="#" method="post">
+            <input type="hidden" asp-for="Id" />
+            <div class="col-lg-12 col-xl-12">
+                <div class="form-group row">
+                    <label class="col-md-12 col-lg-2 label-control text-right"><strong>Student Name</strong></label>
+                    <div class="col-md-12 col-lg-10">
+                        <input disabled asp-for="StudentName" class="form-control" type="text" placeholder="Student Name" />
+                        <span asp-validation-for="StudentName" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-12 col-lg-2 label-control text-right"><strong>Class Name</strong></label>
+                    <div class="col-md-12 col-lg-10">
+                        <input disabled asp-for="Class" class="form-control" type="text" placeholder="Class Name" />
+                        <span asp-validation-for="Class" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-12 col-lg-2 label-control text-right"><strong>Title</strong></label>
+                    <div class="col-md-12 col-lg-10">
+                        <input disabled asp-for="Title" class="form-control" type="text" placeholder="Title" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-12 col-lg-2 label-control text-right"><strong>Leave Date</strong></label>
+                    <div class='input-group date col-md-12 col-lg-10' id='datetimepicker1'>
+                        <input disabled asp-for="LeaveDate" type='datetime-local' class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-12 col-lg-2 label-control text-right"><strong>Leave Type</strong></label>
+                    <div class="col-md-12 col-lg-10">
+                        <input disabled asp-for="LeaveType" class="form-control" type="text" placeholder="Leave Type" />
+                        <span asp-validation-for="LeaveType" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-12 col-lg-2 label-control text-right"><strong>Reason For Leave</strong></label>
+                    <div class="col-md-12 col-lg-10">
+                        <textarea disabled asp-for="ReasonForLeave" class="form-control" aria-label="With textarea"></textarea>
+                        <span asp-validation-for="ReasonForLeave" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="h3 mb-2 row">
+            <div class="col-md-12 col-lg-12 text-right">
+                <a class="btn btn-primary" onclick="Edit()">
+
+                    <span class="text">Edit</span>
+                </a>
+                <a class="btn btn-success" onclick="Approve()">
+
+                    <span class="text">Approve</span>
+                </a>
+                <a class="btn btn-danger" onclick="Cancel()">
+
+                    <span class="text">Cancel</span>
+                </a>
+                <a class="btn btn-warning" onclick="Reject()">
+
+                    <span class="text">Reject</span>
+                </a>
+                <a href="@Url.Action("Request", "Request")" class="btn btn-secondary btn-icon-split">
+                    <span class="icon text-white-50">
+                        <i class="fas fa-arrow-left"></i>
+                    </span>
+                    <span class="text">Back</span>
+                </a>
+                @*<a class="btn btn-success btn-icon-split" onclick="UpdateCategory()">
+                    <span class="icon text-white-50">
+                    <i class="fas fa-check"></i>
+                    </span>
+                    <span class="text">Update</span>
+                    </a>*@
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function Approve() {
+        var formData = new FormData();
+        formData.append("Id", $("#Id").val());
+        formData.append("__RequestVerificationToken", _token);
+        postAjax('@Url.Action("Approve")', formData, function (data) {
+            if (data.code == "200") {
+                setTimeout(
+                    function () {
+                        location.href = '/list-request';
+                    }, 1000);
+            }
+        });
+    }
+
+    function Cancel() {
+        var formData = new FormData();
+        formData.append("Id", $("#Id").val());
+        formData.append("__RequestVerificationToken", _token);
+        postAjax('@Url.Action("Cancel")', formData, function (data) {
+            if (data.code == "200") {
+                setTimeout(
+                    function () {
+                        location.href = '/list-request';
+                    }, 1000);
+            }
+        });
+    }
+
+    function Reject() {
+        var formData = new FormData();
+        formData.append("Id", $("#Id").val());
+        formData.append("__RequestVerificationToken", _token);
+        postAjax('@Url.Action("Reject")', formData, function (data) {
+            if (data.code == "200") {
+                setTimeout(
+                    function () {
+                        location.href = '/list-request';
+                    }, 1000);
+            }
+        });
+    }
+
+    function Edit() {
+        location.href = '/edit-request' + "/" + $("#Id").val();
+    }
+</script>
+

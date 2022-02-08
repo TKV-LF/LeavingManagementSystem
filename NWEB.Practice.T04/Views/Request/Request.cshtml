@@ -1,0 +1,168 @@
+﻿@{
+    ViewData["Title"] = "View Request";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/css/app.css" rel="stylesheet" />
+<div id="content">
+    <!-- Begin Page Content -->
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 class="h1 text-center mb-2 text-gray-800">View Request</h1>
+        <div class="h3 mb-2 row text-right">
+            <div class="col-md-12 col-lg-12">
+                <a href="@Url.Action("CreateRequest", "Request")" class="btn btn-primary btn-icon-split">
+                    <span class="icon text-white-50">
+                        <i class="fas fa-plus"></i>
+                    </span>
+                    <span class="text">Create Request</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- DataTales Example -->
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                @*<div class="form-group row" style="justify-content: flex-end">
+                    <div class="col-md-12 col-lg-3 pr-0">
+                        <input id="searchValue" class="form-control searchValue" type="text" placeholder="Search with request name" />
+                    </div>
+                    <a class="btn btn-success btn-icon-split" onclick="reloadWithPageOne()">
+                        <span class="icon text-white-50">
+                            <i class="fas fa-search"></i>
+                        </span>
+                    </a>
+                </div>*@
+                <table class="table table-bordered" id="monthPlanningTbl" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th data-orderable="false">Student Name</th>
+                            <th data-orderable="false">Class Name</th>
+                            <th data-orderable="false">Title</th>
+                            <th data-orderable="false">Leave Type</th>
+                            <th data-orderable="false">Reason For Leave</th>
+                            <th data-orderable="false">Status</th
+
+                        </tr>
+                    </thead>
+                    <tfoot>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- /.container-fluid -->
+</div>
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Notification</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">Do you want to delete?</div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">No</button>
+                <a class="btn btn-danger" onclick="DeleteRequest()">Yes</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var table = undefined;
+    $(document).ready(function () {
+        loadTable();
+        $('#searchValue').keypress(function (e) {
+            if (e.which == 13) {
+                reloadWithPageOne();
+            }
+        });
+    });
+    function reloadWithPageOne() {
+        if (table != undefined && table.api().ajax != undefined)
+            table.api().ajax.reload(null, true);
+    }
+    function reload() {
+        if (table != undefined && table.api().ajax != undefined)
+            table.api().ajax.reload(null,false);
+    }
+    function loadTable() {
+        table = $('#monthPlanningTbl').dataTable({
+            "oLanguage": {
+                "sEmptyTable": "Empty"
+            },
+            "language": {
+                "paginate": {
+                    "previous": "Previous",
+                    "next": "Next"
+                }
+            },
+            searching: false,
+            paging: true,
+            lengthChange: false,
+            ordering: true,
+            filter: false,
+            destroy: true,
+            orderMulti: false,
+            serverSide: true,
+            processing: true,
+            lengthChange: false,
+            "bSort": false,
+            ajax: function (data, callback, settings) {
+                data.searchValue = $('#searchValue').val();
+                postTable("@Url.Action("GetListRequest", "Request")", data, callback);
+            },
+            "columns": [
+                {
+                    "class": "action",
+                    "render": function (data, row, full) {
+                        return "<a class='' title='Sửa' onclick=DetailRequest('" + full.id + "'); >"+ full.studentName + "</a>";
+                    }
+                },
+                { "data": "class", "name": "Class", "class": "class" },
+                { "data": "title", "name": "Title", "class": "title" },
+                { "data": "leaveType", "name": "LeaveType", "class": "leaveType" },
+                { "data": "reasonForLeave", "name": "ReasonForLeave", "class": "reasonForLeave" },
+                {
+                    "class": "action",
+                    "render": function (data, row, full) {
+                        if(full.status == 2){
+                            return "<td class=''>Approve</td>";
+                        }else if(full.status == 3){
+                            return "<td class=''>Cancel</td>";
+                        }else if(full.status == 4){
+                            return "<td class=''>Reject</td>";
+                        }else {
+                            return "<td class=''>Submited</td>";
+                        }
+                    }
+                }
+
+            ]
+        });
+    }
+
+    function openConfirmDelete(id) {
+        deleteId = id;
+    }
+
+    function DeleteRequest() {
+        var formData = new FormData();
+        formData.append("Id", deleteId);
+        formData.append("__RequestVerificationToken", _token);
+        postAjax('@Url.Action("DeleteRequest")', formData, function (data) {
+            $('#deleteModal').modal("hide");
+            reload();
+        });
+    }
+
+    function DetailRequest(id) {
+        location.href = '/request-detail' + "/" + id;
+    }
+    function UpdateRequest(id) {
+        location.href = '/update-request' + "/" + id;
+    }
+</script>

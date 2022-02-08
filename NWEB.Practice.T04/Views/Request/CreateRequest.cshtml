@@ -1,0 +1,146 @@
+﻿@model Model.Request.RequestModel
+@{
+    ViewData["Title"] = "Create Request";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="content">
+    <!-- Begin Page Content -->
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 class="h1 text-center mb-2 text-gray-800">CREATE LEAVE REQUEST</h1>
+
+        <div class="form-group"></div>
+        <form id="CreatePlace" action="#" method="post">
+            <div class="col-lg-12 col-xl-12">
+                <div class="form-group row">
+                    <label class="col-md-12 col-lg-2 label-control text-right"><strong>Student Name</strong></label>
+                    <div class="col-md-12 col-lg-10">
+                        <input asp-for="StudentName" class="form-control" type="text" placeholder="Student Name" />
+                        <span asp-validation-for="StudentName" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-12 col-lg-2 label-control text-right"><strong>Class Name</strong></label>
+                    <div class="col-md-12 col-lg-10">
+                        <select required asp-for="Class" class="custom-select form-control" id="inputGroupSelect01">
+                            <option value="0" selected disabled>Choose...</option>
+                            <option value=".Net 01">.Net 01</option>
+                            <option value=".Net 02">.Net 02</option>
+                            <option value="Java 01">Java 01</option>
+                            <option value="Java 02">Java 02</option>
+                        </select>
+                        <span id="classId" class="text-danger"></span>
+                    </div>
+
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-12 col-lg-2 label-control text-right"><strong>Title</strong></label>
+                    <div class="col-md-12 col-lg-10">
+                        <input asp-for="Title" class="form-control" type="text" placeholder="Title" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-12 col-lg-2 label-control text-right"><strong>Leave Date</strong></label>
+                    <div class='input-group date col-md-12 col-lg-10' id='datetimepicker1'>
+                        <input asp-for="LeaveDate" type='datetime-local' class="form-control" />
+                        <span asp-validation-for="LeaveDate" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-12 col-lg-2 label-control text-right"><strong>Leave Type</strong></label>
+                    <div class="col-md-12 col-lg-10">
+                        <div class="form-check form-check-inline">
+                            <input asp-for="LeaveType" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="Late Coming">
+                            <label class="form-check-label" for="inlineRadio1">Late Coming</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input asp-for="LeaveType" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="Early Leave">
+                            <label class="form-check-label" for="inlineRadio2">Early Leave</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input asp-for="LeaveType" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="Leave a half of day">
+                            <label class="form-check-label" for="inlineRadio2">Leave a half of day</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input asp-for="LeaveType" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="Leave one day">
+                            <label class="form-check-label" for="inlineRadio2">Leave one day</label>
+                        </div>
+                         <span id="typeId" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-md-12 col-lg-2 label-control text-right"><strong>Reason For Leave</strong></label>
+                    <div class="col-md-12 col-lg-10">
+                        <textarea asp-for="ReasonForLeave" class="form-control" aria-label="With textarea"></textarea>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="h3 mb-2 row">
+            <div class="col-md-12 col-lg-12 text-right">
+                <a href="@Url.Action("Request", "Request")" class="btn btn-primary btn-icon-split">
+                    <span class="icon text-white-50">
+                        <i class="fas fa-arrow-left"></i>
+                    </span>
+                    <span class="text">Back</span>
+                </a>
+                <a class="btn btn-primary btn-icon-split" onclick="SaveRequest()">
+                    <span class="icon text-white-50">
+                        <i class="fas fa-check"></i>
+                    </span>
+                    <span class="text">Create</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+
+    function SaveRequest() {
+        
+        var e = document.getElementById("inputGroupSelect01");
+        var optionSelIndex = e.options[e.selectedIndex].value;
+        var optionSelectedText = e.options[e.selectedIndex].text;
+        if (optionSelIndex == 0) {
+            $("#classId").text("Bạn chưa nhập đủ thông tin.");
+        } else if($("input[name=inlineRadioOptions]:checked").val() == null){
+            $("#classId").text("");
+            $("#typeId").text("Bạn chưa chọn.");
+        }
+        else {
+            $("#classId").text("");
+            $("#typeId").text("");
+            var lstIdStr = 'StudentName,Title,LeaveDate';
+            if (!RequireValidate(lstIdStr)) {
+                toastr.error('Bạn chưa nhập đủ thông tin.');
+                return;
+            };
+            var formData = new FormData();
+            formData.append("StudentName", $("#StudentName").val());
+            formData.append("Class", $("#inputGroupSelect01").val());
+            formData.append("Title", $("#Title").val());
+            formData.append("LeaveDate", $("#LeaveDate").val());
+            formData.append("LeaveType", $("input[name=inlineRadioOptions]:checked").val());
+            formData.append("ReasonForLeave", $("#ReasonForLeave").val());
+
+            formData.append("__RequestVerificationToken", _token);
+            postAjax('@Url.Action("InsertRequest")', formData, function (data) {
+                if (data.code == "200") {
+                    setTimeout(
+                        function () {
+                            location.href = '/list-request';
+                        }, 1000);
+                }
+            });
+        }
+
+        
+    }
+</script>
